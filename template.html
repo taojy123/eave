@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{doc.title}}</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!--<link rel="stylesheet" href="https://docs.konghq.com/assets/styles.css" />-->
+  {{style}}
+
+  <style>
+    .main-content {
+      padding: 0 50px;
+    }
+    .content {
+      padding: 20px;
+    }
+  </style>
+
+</head>
+
+
+<body>
+
+  <div class="main-content">
+
+    <div class="page-content content">
+
+
+
+      <h2>{{doc.title}}</h2>
+
+      <ul>
+        <li><code>Version:</code> {{doc.version}}</li>
+        <li><code>Host:</code> {{doc.host}}</li>
+      </ul>
+
+      %if doc.description:
+        <div class="alert alert-info">
+          {{markdown(doc.description)}}
+        </div>
+      %endif
+
+      <!-- 
+      <div class="alert alert-ee"></div>
+      <div class="alert alert-info"></div>
+      <div class="alert alert-warning"></div>
+      <div class="alert alert-success"></div>
+      -->
+
+      <ul>
+        %for api in doc.apis:
+          <li><a href="#{{api.id}}" class="scroll-to">{{api.title}}</a></li>
+        %endfor
+      </ul>
+
+      <hr>
+
+      %for note in doc.notes:
+        <div>
+          <h4>{{note.title}}</h4>
+          <p>{{markdown(note.content)}}</p>
+        </div>
+      %endfor
+
+      <hr>
+
+      %for api in doc.apis:
+
+        <h2 id="{{api.id}}">{{api.title}}</h2>
+
+        <div class="endpoint {{api.method.lower()}}">{{api.uri}}</div>
+
+        %if api.description:
+          <div class="alert alert-ee">
+            {{markdown(api.description)}}
+          </div>
+        %endif
+
+        %if api.uri_params:
+          <table>
+            <thead>
+              <tr>
+                %if language == 'zh':
+                  <th>Uri 参数</th>
+                  <th>类型</th>
+                  <th>描述</th>
+                  <th>必须</th>
+                  <th>默认值</th>
+                  <th>示例</th>
+                %else:
+                  <th>Uri Parameters</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Required</th>
+                  <th>Default</th>
+                  <th>Example</th>
+                %endif
+              </tr>
+            </thead>
+            <tbody>
+              %for param in api.uri_params:
+                <tr>
+                  <td><code>{{param.name}}</code></td>
+                  <td><em>{{param.type}}</em></td>
+                  <td>{{param.description}}</td>
+                  <td>{{param.required_svg}}</td>
+                  <td>{{param.default}}</td>
+                  <td>{{param.example}}</td>
+                </tr>
+              %endfor
+            </tbody>
+          </table>
+        %endif
+
+        %if api.query_params:
+          <table>
+            <thead>
+              <tr>
+                %if language == 'zh':
+                  <th>Query 参数</th>
+                  <th>类型</th>
+                  <th>描述</th>
+                  <th>必须</th>
+                  <th>默认值</th>
+                  <th>示例</th>
+                %else:
+                  <th>Query Parameters</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Required</th>
+                  <th>Default</th>
+                  <th>Example</th>
+                %endif
+              </tr>
+            </thead>
+            <tbody>
+              %for param in api.query_params:
+                <tr>
+                  <td><code>{{param.name}}</code></td>
+                  <td><em>{{param.type}}</em></td>
+                  <td>{{param.description}}</td>
+                  <td>{{param.required_svg}}</td>
+                  <td>{{param.default}}</td>
+                  <td>{{param.example}}</td>
+                </tr>
+              %endfor
+            </tbody>
+          </table>
+        %endif
+
+        %if api.post_params:
+          <table>
+            <thead>
+              <tr>
+                %if language == 'zh':
+                  <th>POST 参数</th>
+                  <th>类型</th>
+                  <th>描述</th>
+                  <th>必须</th>
+                  <th>默认值</th>
+                  <th>示例</th>
+                %else:
+                  <th>POST Parameters</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Required</th>
+                  <th>Default</th>
+                  <th>Example</th>
+                %endif
+              </tr>
+            </thead>
+            <tbody>
+              %for param in api.post_params:
+                <tr>
+                  <td><code>{{param.name}}</code></td>
+                  <td><em>{{param.type}}</em></td>
+                  <td>{{param.description}}</td>
+                  <td>{{param.required_svg}}</td>
+                  <td>{{param.default}}</td>
+                  <td>{{param.example}}</td>
+                </tr>
+              %endfor
+            </tbody>
+          </table>
+          <p>
+            Content-Types:
+            %for t in api.content_types:
+              <code>{{t}}</code>
+            %endfor
+          </p>
+        %endif
+
+        %if api.body_example:
+          <p>
+            %if language == 'zh':
+              示例请求数据:
+            %else:
+              Request Body Example:
+            %endif
+          </p>
+          <pre><code>{{api.body_example}}</code></pre>
+        %endif
+
+        %if api.response_example:
+          <p>
+            %if language == 'zh':
+              示例返回结果:
+            %else:
+              Response Example:
+            %endif
+          </p>
+          <pre><code>{{api.response_example}}</code></pre>
+        %endif
+
+        %if api.tips:
+          <div class="alert alert-warning">
+            {{markdown(api.tips)}}
+          </div>
+        %endif
+
+        <hr>
+
+      %endfor
+
+
+
+    </div>
+
+
+  </div>
+
+
+</body>
+
+
+</html>

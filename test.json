@@ -1,0 +1,104 @@
+{
+  "title": "Test Api Document",
+  "version": "v1.0.0",
+  "host": "http://www.apitest.com",
+  "description": "\nthis is a test document\n- test1\n- test2\n",
+  "notes": [
+    {
+      "title": "test note1",
+      "content": "\nthis is the **first** test note\n"
+    },
+    {
+      "title": "",
+      "content": "\nthis is the **second** test note\n```\n{\n    \"a\": 1,\n    \"b\": 2 \n}\n```\n"
+    }
+  ],
+  "apis": [
+    {
+      "title": "first api",
+      "uri": "/test1/<id>/",
+      "method": "GET",
+      "description": "this is the **first** api",
+      "content_types": [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data"
+      ],
+      "body_example": "",
+      "response_example": "",
+      "tips": "",
+      "uri_params": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "resource id",
+          "required": true,
+          "default": "",
+          "example": 10
+        }
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "string",
+          "description": "page number of list",
+          "required": false,
+          "default": 1,
+          "example": ""
+        }
+      ],
+      "post_params": []
+    },
+    {
+      "title": "second api",
+      "uri": "/test2/",
+      "method": "POST",
+      "description": "this is the **second** api",
+      "content_types": [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data"
+      ],
+      "body_example": "\n{\n    \"username\": \"balabala\",\n    \"password\": \"123456\"\n}\n",
+      "response_example": "\n{\n    \"id\": 2,\n    \"username\": \"balabala\",\n    \"password\": \"123456\"\n}\n",
+      "tips": "",
+      "uri_params": [],
+      "query_params": [],
+      "post_params": [
+        {
+          "name": "username",
+          "type": "string",
+          "description": "",
+          "required": true,
+          "default": "",
+          "example": ""
+        },
+        {
+          "name": "password",
+          "type": "string",
+          "description": "",
+          "required": true,
+          "default": "",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "title": "thrid api 测测中文",
+      "uri": "/test3/",
+      "method": "DELETE",
+      "description": "this is the **thrid** api 测测测中文",
+      "content_types": [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data"
+      ],
+      "body_example": "",
+      "response_example": "",
+      "tips": "\n##### test tips balabala...\n```\nprint('hello world!')\n```\n",
+      "uri_params": [],
+      "query_params": [],
+      "post_params": []
+    }
+  ]
+}
