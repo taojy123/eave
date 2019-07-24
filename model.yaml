@@ -1,0 +1,36 @@
+doc 
+	title
+	version
+	host
+	base_url
+	description
+	notes
+		title
+		content
+
+	blocks
+		type
+		content
+
+
+  apis
+    title
+    method
+    url
+    description
+    url_params
+    query_params
+    request_body
+      form_data
+      json_example
+    response
+      status_code
+      response_example
+
+
+
+
+
+
+
+
