@@ -32,8 +32,8 @@
       <h2>{{doc.title}}</h2>
 
       <ul>
-        <li><code>Version:</code> {{doc.version}}</li>
-        <li><code>Host:</code> {{doc.host}}</li>
+        <li>Version: <code>{{doc.version}}</code></li>
+        <li>Host: <code>{{doc.host}}</code></li>
       </ul>
 
       %if doc.description:
@@ -48,6 +48,14 @@
       <div class="alert alert-warning"></div>
       <div class="alert alert-success"></div>
       -->
+
+      <p>
+        %if language == 'zh':
+          目录
+        %else:
+          Contents
+        %endif
+      </p>
 
       <ul>
         %for api in doc.apis:
@@ -200,7 +208,7 @@
               Request Body Example:
             %endif
           </p>
-          <pre><code>{{api.body_example}}</code></pre>
+          <pre><code>{{api.body_example.strip()}}</code></pre>
         %endif
 
         %if api.response_example:
@@ -211,7 +219,7 @@
               Response Example:
             %endif
           </p>
-          <pre><code>{{api.response_example}}</code></pre>
+          <pre><code>{{api.response_example.strip()}}</code></pre>
         %endif
 
         %if api.tips:

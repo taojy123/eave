@@ -124,8 +124,8 @@ class Api(Base):
         self.method = data.get('method', self.method)
         self.description = data.get('description', self.description)
         self.content_types = data.get('content_types', self.content_types)
-        self.body_example = data.get('body_example', self.body_example)
-        self.response_example = data.get('response_example', self.response_example)
+        self.body_example = data.get('body_example', self.body_example).strip()
+        self.response_example = data.get('response_example', self.response_example).strip()
         self.tips = data.get('tips', self.tips)
 
         uri_params = data.get('uri_params')
