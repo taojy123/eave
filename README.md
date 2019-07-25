@@ -93,7 +93,7 @@ doc.build('best.html')
 
 ```
 
-<img src="https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/best.png" width="863">
+
 ![demo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/best.png)
 
 
