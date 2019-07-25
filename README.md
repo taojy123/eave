@@ -14,7 +14,7 @@ pip install eave
 
 ## Basic Usage
 
-```
+```python
 # import components of eave
 from eave import Doc, Note, Api, UP, QP, PP
 
@@ -93,10 +93,13 @@ doc.build('best.html')
 
 ```
 
+<img src="https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/best.png" width="863">
+![demo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/best.png)
+
 
 ## Advanced Usage
 
-```
+```python
 # export to json
 json_data = doc.to_json()
 
