@@ -1,7 +1,6 @@
 from eave import *
 
 
-
 doc = Doc(title='Test Api Document')
 doc.host = 'http://www.apitest.com'
 doc.description = """

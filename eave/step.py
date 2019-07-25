@@ -4,6 +4,11 @@ import re
 import sys
 
 
+PY3 = False
+if sys.version_info > (3, 0):
+    PY3 = True
+
+
 class Template(object):
 
     COMPILED_TEMPLATES = {} # {template string: code object, }
@@ -78,8 +83,10 @@ class Template(object):
             blk = re.sub(r"\\(%|{|})", "\g<1>", blk)
 
             if not (n % 2):
+                # Escape backslash characters
+                blk = re.sub(r'\\', r'\\\\', blk)
                 # Escape double-quote characters
-                blk = re.sub(r"\"", "\\\"", blk)
+                blk = re.sub(r'"', r'\\"', blk)
                 blk = (" " * (indent*4)) + 'echo("""{0}""")'.format(blk)
             else:
                 blk = blk.rstrip()
@@ -121,7 +128,7 @@ def escape_html(x):
 
 def to_unicode(x, encoding="utf-8"):
     """Convert anything to Unicode."""
-    if sys.version_info > (3, 0):
+    if PY3:
         return str(x)
     if not isinstance(x, unicode):
         x = unicode(str(x), encoding, errors="replace")
