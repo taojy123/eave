@@ -170,7 +170,8 @@ class Param(Base):
         if self.required:
             return TRUE_SVG
         else:
-            return FALSE_SVG
+            # return FALSE_SVG
+            return ''
 
     def load_data(self, data):
         self.name = data.get('name', self.name)

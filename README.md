@@ -9,8 +9,12 @@ A restful api document builder
 pip install eave
 ```
 
------
 
+## Requirements
+
+- Python >= 3.4
+
+-----
 
 ## Basic Usage
 
