@@ -1,9 +1,10 @@
 # python3
 
 import os
-import sys
 import json
+
 import mistune
+import yaml
 
 from .step import Template
 
@@ -19,9 +20,15 @@ FALSE_SVG = open(os.path.join(BASE_DIR, 'resource/false.svg'), encoding='utf8').
 
 class Base:
     def __init__(self, data=None, **kwargs):
+        try:
+            data = json.loads(data)
+        except:
+            pass
+        try:
+            data = yaml.safe_load(data)
+        except:
+            pass
         if data:
-            if isinstance(data, str):
-                data = json.loads(data)
             self.load_data(data)
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -29,6 +36,20 @@ class Base:
     def load_data(self, data):
         # do something by override
         pass
+
+    def to_dict(self):
+        # do something by override
+        return {}
+
+    def to_json(self):
+        return json.dumps(self.to_dict(), ensure_ascii=False, indent=2)
+
+    def to_yaml(self):
+        return yaml.safe_dump(self.to_dict())
+
+    def clone(self):
+        data = self.to_dict()
+        return self.__class__(data)
 
 
 class Doc(Base):
@@ -81,9 +102,6 @@ class Doc(Base):
             'notes': [n.to_dict() for n in self.notes],
             'apis': [a.to_dict() for a in self.apis],
         }
-
-    def to_json(self):
-        return json.dumps(self.to_dict(), ensure_ascii=False, indent=2)
 
 
 class Note(Base):
@@ -202,7 +220,6 @@ class QueryParam(Param):
 
 class PostParam(Param):
     pass
-
 
 
 UP = UriParam

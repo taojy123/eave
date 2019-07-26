@@ -192,12 +192,16 @@
               %endfor
             </tbody>
           </table>
-          <p>
-            Content-Types:
-            %for t in api.content_types:
-              <code>{{t}}</code>
-            %endfor
-          </p>
+
+          %if api.content_types:
+            <p>
+              Content-Types:
+              %for t in api.content_types:
+                <code>{{t}}</code>
+              %endfor
+            </p>
+          %endif
+
         %endif
 
         %if api.body_example:

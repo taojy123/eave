@@ -114,4 +114,9 @@ doc2.title = 'My Second Api Document'
 # build by chinese language
 doc2.build('best2.html', language='zh')
 
+# export to yaml
+yaml_data = doc.to_yaml()
+doc3 = Doc(yaml_data)
+doc3.build('best3.html')
+
 ```
