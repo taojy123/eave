@@ -1,5 +1,5 @@
 # eave
-A restful api document builder
+A Restful Api Document Builder
 
 -----
 
