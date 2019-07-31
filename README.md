@@ -119,4 +119,9 @@ yaml_data = doc.to_yaml()
 doc3 = Doc(yaml_data)
 doc3.build('best3.html')
 
+# read from raml
+from eave.utils import raml2eave
+doc = raml2eave('example.raml')
+doc.build('example.html', 'zh')
+
 ```
