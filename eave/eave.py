@@ -83,10 +83,12 @@ class Doc(Base):
     def add_note(self, *args, **kwargs):
         note = Note(*args, **kwargs)
         self.notes.append(note)
+        return note
 
     def add_api(self, *args, **kwargs):
         api = Api(*args, **kwargs)
         self.apis.append(api)
+        return api
 
     def load_data(self, data):
         self.title = data.get('title', self.title)

@@ -44,8 +44,7 @@
     <div class="page-content content">
 
 
-
-      <h2>{{doc.title}}</h2>
+      <h1>{{doc.title}}</h1>
 
       <ul>
         <li>Version: <code>{{doc.version}}</code></li>
@@ -81,7 +80,9 @@
 
       %for note in doc.notes:
         <div>
-          <h4>{{note.title}}</h4>
+          %if note.title:
+            <h4>{{note.title}}</h4>
+          %endif
           <p>{{markdown(note.content)}}</p>
         </div>
       %endfor
