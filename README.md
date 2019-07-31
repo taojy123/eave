@@ -20,7 +20,7 @@ pip install eave
 
 ```python
 # import components of eave
-from eave import Doc, Note, Api, UP, QP, PP
+from eave import Doc, Note, Api, UP, QP, BP
 
 # or you can import all
 from eave import *
@@ -76,16 +76,16 @@ doc.add_api(
     title='Create a product',
     uri='/products/',
     method='POST',
-    post_params=[
-        PP(name='name', required=True),
-        PP(name='category'),
-        PP(name='price', type='float', default=0),
+    body_params=[
+        BP(name='name', required=True),
+        BP(name='category', example='food'),
+        BP(name='price', type='float', default=0),
     ],
     content_types=['application/json'],
     body_example="""
 {
     "name": "Sprite 250ml",
-    "category": "drink-food",
+    "category": "food",
     "price": 3.5
 }
 """,

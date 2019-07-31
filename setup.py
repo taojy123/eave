@@ -18,7 +18,7 @@ for line in open('requirements.txt').readlines():
 
 setup(
     name='eave',
-    version='0.0.4',
+    version='0.0.5',
     description='A restful api document builder',
     long_description=long_description,
     long_description_content_type="text/markdown",

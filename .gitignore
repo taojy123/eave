@@ -103,13 +103,15 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+.idea/
+
+
 test.html
-test.json
-test2.html
 
 best.html
 best2.html
 best3.html
 
-.idea/
+example.html
+
 

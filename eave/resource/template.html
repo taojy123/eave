@@ -53,9 +53,7 @@
       </ul>
 
       %if doc.description:
-        <div class="alert alert-info">
-          {{markdown(doc.description)}}
-        </div>
+        <div class="alert alert-info">{{markdown(doc.description)}}</div>
       %endif
 
       <!-- 
@@ -88,7 +86,9 @@
         </div>
       %endfor
 
-      <hr>
+      %if doc.notes:
+        <hr>
+      %endif
 
       %for api in doc.apis:
 
@@ -97,9 +97,7 @@
         <div class="endpoint {{api.method.lower()}}">{{api.uri}}</div>
 
         %if api.description:
-          <div class="alert alert-ee">
-            {{markdown(api.description)}}
-          </div>
+          <div class="alert alert-ee">{{markdown(api.description)}}</div>
         %endif
 
         %if api.uri_params:
@@ -174,19 +172,19 @@
           </table>
         %endif
 
-        %if api.post_params:
+        %if api.body_params:
           <table>
             <thead>
               <tr>
                 %if language == 'zh':
-                  <th>POST 参数</th>
+                  <th>Body 参数</th>
                   <th>类型</th>
                   <th>描述</th>
                   <th>必须</th>
                   <th>默认值</th>
                   <th>示例</th>
                 %else:
-                  <th>POST Parameters</th>
+                  <th>Body Parameters</th>
                   <th>Type</th>
                   <th>Description</th>
                   <th>Required</th>
@@ -196,7 +194,7 @@
               </tr>
             </thead>
             <tbody>
-              %for param in api.post_params:
+              %for param in api.body_params:
                 <tr>
                   <td><code>{{param.name}}</code></td>
                   <td><em>{{param.type}}</em></td>

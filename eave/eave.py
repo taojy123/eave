@@ -9,8 +9,7 @@ import yaml
 from .step import Template
 
 
-__all__ = ['Doc', 'Note', 'Api', 'Param', 'UriParam', 'QueryParam', 'PostParam', 'UP', 'QP', 'PP']
-
+__all__ = ['Doc', 'Note', 'Api', 'Param', 'UriParam', 'QueryParam', 'BodyParam', 'UP', 'QP', 'BP']
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -22,6 +21,7 @@ RESOURCE = {
     'highlight_css': open(os.path.join(BASE_DIR, 'resource/highlight/styles/github.css'), encoding='utf8').read(),
     'highlight_js': open(os.path.join(BASE_DIR, 'resource/highlight/highlight.pack.js'), encoding='utf8').read(),
 }
+
 
 class Base:
     def __init__(self, data=None, **kwargs):
@@ -62,8 +62,13 @@ class Doc(Base):
     version = 'v1.0.0'
     host = 'http://rest.api.com'
     description = ''
-    notes = []
-    apis = []
+    notes = None
+    apis = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.notes = self.notes or []
+        self.apis = self.apis or []
 
     def build(self, target=None, language='en'):
         # language: zh, en ...
@@ -129,14 +134,20 @@ class Api(Base):
     uri = '/'
     method = 'GET'
     description = ''
-    uri_params = []
-    query_params = []
-    post_params = []
+    uri_params = None
+    query_params = None
+    body_params = None
     content_types = ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data']
     body_example = ''
     response_example = ''
     tips = ''
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uri_params = self.uri_params or []
+        self.query_params = self.query_params or []
+        self.body_params = self.body_params or []
+        
     @property
     def id(self):
         return id(self)
@@ -153,7 +164,7 @@ class Api(Base):
 
         uri_params = data.get('uri_params')
         query_params = data.get('query_params')
-        post_params = data.get('post_params')
+        body_params = data.get('body_params')
 
         if uri_params:
             self.uri_params = [UriParam(d) for d in uri_params]
@@ -161,8 +172,8 @@ class Api(Base):
         if query_params:
             self.query_params = [QueryParam(d) for d in query_params]
 
-        if post_params:
-            self.post_params = [PostParam(d) for d in post_params]
+        if body_params:
+            self.body_params = [BodyParam(d) for d in body_params]
 
     def to_dict(self):
         return {
@@ -176,7 +187,7 @@ class Api(Base):
             'tips': self.tips,
             'uri_params': [p.to_dict() for p in self.uri_params],
             'query_params': [p.to_dict() for p in self.query_params],
-            'post_params': [p.to_dict() for p in self.post_params],
+            'body_params': [p.to_dict() for p in self.body_params],
         }
 
 
@@ -223,11 +234,11 @@ class QueryParam(Param):
     pass
 
 
-class PostParam(Param):
+class BodyParam(Param):
     pass
 
 
 UP = UriParam
 QP = QueryParam
-PP = PostParam
+BP = BodyParam
 
