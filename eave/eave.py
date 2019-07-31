@@ -13,10 +13,15 @@ __all__ = ['Doc', 'Note', 'Api', 'Param', 'UriParam', 'QueryParam', 'PostParam',
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STYLE = open(os.path.join(BASE_DIR, 'resource/style.css'), encoding='utf8').read()
+
 TRUE_SVG = open(os.path.join(BASE_DIR, 'resource/true.svg'), encoding='utf8').read()
 FALSE_SVG = open(os.path.join(BASE_DIR, 'resource/false.svg'), encoding='utf8').read()
 
+RESOURCE = {
+    'style': open(os.path.join(BASE_DIR, 'resource/style.css'), encoding='utf8').read(),
+    'highlight_css': open(os.path.join(BASE_DIR, 'resource/highlight/styles/github.css'), encoding='utf8').read(),
+    'highlight_js': open(os.path.join(BASE_DIR, 'resource/highlight/highlight.pack.js'), encoding='utf8').read(),
+}
 
 class Base:
     def __init__(self, data=None, **kwargs):
@@ -64,7 +69,7 @@ class Doc(Base):
         # language: zh, en ...
         template = open(os.path.join(BASE_DIR, 'resource/template.html'), encoding='utf8').read()
         html = Template(template, strip=False).expand(
-            doc=self, markdown=mistune.markdown, style=STYLE, language=language)
+            doc=self, markdown=mistune.markdown, resource=RESOURCE, language=language)
         if target:
             open(target, 'w', encoding='utf8').write(html)
         print(f'{self.title} build successful!')

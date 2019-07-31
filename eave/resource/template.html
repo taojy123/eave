@@ -7,7 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- <link rel="stylesheet" href="https://docs.konghq.com/assets/styles.css" /> -->
-  <style>{{style}}</style>
+  <style>
+    {{resource['style']}}
+  </style>
+
+  <style>
+    {{resource['highlight_css']}}
+  </style>
 
   <style>
     .main-content {
@@ -233,7 +239,7 @@
               Response Example:
             %endif
           </p>
-          <pre><code>{{api.response_example.strip()}}</code></pre>
+          <pre><code class="lang-json">{{api.response_example.strip()}}</code></pre>
         %endif
 
         %if api.tips:
@@ -253,6 +259,12 @@
 
   </div>
 
+  <script>
+      {{resource['highlight_js']}}
+  </script>
+  <script>
+      hljs.initHighlightingOnLoad()
+  </script>
 
 </body>
 
