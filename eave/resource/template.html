@@ -52,7 +52,7 @@
       </ul>
 
       %if doc.description:
-        <div class="alert alert-info">{{markdown(doc.description)}}</div>
+        <div class="alert alert-info">{{markdown(doc.description, escape=False)}}</div>
       %endif
 
       <!-- 
@@ -83,7 +83,7 @@
           %if note.title:
             <h4>{{note.title}}</h4>
           %endif
-          <p>{{markdown(note.content)}}</p>
+          <p>{{markdown(note.content, escape=False)}}</p>
         </div>
       %endfor
 
@@ -98,7 +98,7 @@
         <div class="endpoint {{api.method.lower()}}">{{api.uri}}</div>
 
         %if api.description:
-          <div class="alert alert-ee">{{markdown(api.description)}}</div>
+          <div class="alert alert-ee">{{markdown(api.description, escape=False)}}</div>
         %endif
 
         %if api.uri_params:
@@ -231,7 +231,14 @@
         %endif
 
         %if api.response_description:
-          {{markdown(api.response_description)}}
+          <p>
+            %if language == 'zh':
+              返回结果说明:
+            %else:
+              Response Description:
+            %endif
+          </p>
+          {{markdown(api.response_description, escape=False)}}
         %endif
 
         %if api.response_example:
@@ -247,7 +254,7 @@
 
         %if api.tips:
           <div class="alert alert-warning">
-            {{markdown(api.tips)}}
+            {{markdown(api.tips, escape=False)}}
           </div>
         %endif
 
