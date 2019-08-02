@@ -230,6 +230,10 @@
           <pre><code>{{api.body_example.strip()}}</code></pre>
         %endif
 
+        %if api.response_description:
+          {{markdown(api.response_description)}}
+        %endif
+
         %if api.response_example:
           <p>
             %if language == 'zh':

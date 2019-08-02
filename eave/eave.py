@@ -141,6 +141,7 @@ class Api(Base):
     body_params = None
     content_types = ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data']
     body_example = ''
+    response_description = ''
     response_example = ''
     tips = ''
 
@@ -161,6 +162,7 @@ class Api(Base):
         self.description = data.get('description', self.description)
         self.content_types = data.get('content_types', self.content_types)
         self.body_example = data.get('body_example', self.body_example).strip()
+        self.response_description = data.get('response_description', self.response_description).strip()
         self.response_example = data.get('response_example', self.response_example).strip()
         self.tips = data.get('tips', self.tips)
 
@@ -185,6 +187,7 @@ class Api(Base):
             'description': self.description,
             'content_types': self.content_types,
             'body_example': self.body_example,
+            'response_description': self.response_description,
             'response_example': self.response_example,
             'tips': self.tips,
             'uri_params': [p.to_dict() for p in self.uri_params],
