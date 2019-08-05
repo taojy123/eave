@@ -1,2 +1,3 @@
 include README.md LICENSE requirements.txt
+include eave/template.html
 recursive-include eave/resource *.*
