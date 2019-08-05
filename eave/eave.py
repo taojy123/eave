@@ -72,7 +72,7 @@ class Doc(Base):
 
     def build(self, target=None, language='en'):
         # language: zh, en ...
-        template = open(os.path.join(BASE_DIR, 'resource/template.html'), encoding='utf8').read()
+        template = open(os.path.join(BASE_DIR, 'template.html'), encoding='utf8').read()
         html = Template(template, strip=False).expand(
             doc=self, markdown=mistune.markdown, resource=RESOURCE, language=language)
         if target:
