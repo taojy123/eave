@@ -133,7 +133,7 @@ class Note(Base):
 
 class Api(Base):
     title = ''
-    uri = '/'
+    uri = ''
     method = 'GET'
     description = ''
     uri_params = None
@@ -144,12 +144,15 @@ class Api(Base):
     response_description = ''
     response_example = ''
     tips = ''
+    from_md = ''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.uri_params = self.uri_params or []
         self.query_params = self.query_params or []
         self.body_params = self.body_params or []
+        if self.from_md and os.path.exists(self.from_md):
+            self.from_md = open(self.from_md, encoding='utf8').read()
         
     @property
     def id(self):
@@ -165,6 +168,7 @@ class Api(Base):
         self.response_description = data.get('response_description', self.response_description).strip()
         self.response_example = data.get('response_example', self.response_example).strip()
         self.tips = data.get('tips', self.tips)
+        self.from_md = data.get('from_md', self.from_md)
 
         uri_params = data.get('uri_params')
         query_params = data.get('query_params')
@@ -190,6 +194,7 @@ class Api(Base):
             'response_description': self.response_description,
             'response_example': self.response_example,
             'tips': self.tips,
+            'from_md': self.from_md,
             'uri_params': [p.to_dict() for p in self.uri_params],
             'query_params': [p.to_dict() for p in self.query_params],
             'body_params': [p.to_dict() for p in self.body_params],

@@ -92,6 +92,18 @@ print('hello world!')
 """
 )
 
+doc.add_api(
+    title="test md",
+    uri="/test_md",
+    from_md="todo.md",
+)
+
+doc.add_api(
+    title="test readme",
+    from_md="README.md"
+)
+
+
 doc.build('test.html', language='zh')
 
 

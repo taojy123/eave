@@ -70,7 +70,7 @@
 
       <p>
         %if language == 'zh':
-          目录
+          接口目录:
         %else:
           Contents
         %endif
@@ -87,7 +87,7 @@
       %for note in doc.notes:
         <div>
           %if note.title:
-            <h4>{{note.title}}</h4>
+            <h3>{{note.title}}</h3>
           %endif
           <p>{{markdown(note.content, escape=False)}}</p>
         </div>
@@ -99,169 +99,181 @@
 
       %for api in doc.apis:
 
-        <h2 id="{{api.id}}">{{api.title}}</h2>
+        <h1 id="{{api.id}}">{{api.title}}</h1>
 
-        <div class="endpoint {{api.method.lower()}}">{{api.uri}}</div>
-
-        %if api.description:
-          <div class="alert alert-ee">{{markdown(api.description, escape=False)}}</div>
+        %if api.uri or not api.from_md:
+          <div class="endpoint {{api.method.lower()}}">{{api.uri}}</div>
         %endif
 
-        %if api.uri_params:
-          <table>
-            <thead>
-              <tr>
-                %if language == 'zh':
-                  <th>Uri 参数</th>
-                  <th>类型</th>
-                  <th>描述</th>
-                  <th>必须</th>
-                  <th>默认值</th>
-                  <th>示例</th>
-                %else:
-                  <th>Uri Parameters</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Required</th>
-                  <th>Default</th>
-                  <th>Example</th>
-                %endif
-              </tr>
-            </thead>
-            <tbody>
-              %for param in api.uri_params:
-                <tr>
-                  <td><code>{{param.name}}</code></td>
-                  <td><em>{{param.type}}</em></td>
-                  <td>{{param.description}}</td>
-                  <td>{{param.required_svg}}</td>
-                  <td>{{param.default}}</td>
-                  <td>{{param.example}}</td>
-                </tr>
-              %endfor
-            </tbody>
-          </table>
-        %endif
+        %if api.from_md:
 
-        %if api.query_params:
-          <table>
-            <thead>
-              <tr>
-                %if language == 'zh':
-                  <th>Query 参数</th>
-                  <th>类型</th>
-                  <th>描述</th>
-                  <th>必须</th>
-                  <th>默认值</th>
-                  <th>示例</th>
-                %else:
-                  <th>Query Parameters</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Required</th>
-                  <th>Default</th>
-                  <th>Example</th>
-                %endif
-              </tr>
-            </thead>
-            <tbody>
-              %for param in api.query_params:
-                <tr>
-                  <td><code>{{param.name}}</code></td>
-                  <td><em>{{param.type}}</em></td>
-                  <td>{{param.description}}</td>
-                  <td>{{param.required_svg}}</td>
-                  <td>{{param.default}}</td>
-                  <td>{{param.example}}</td>
-                </tr>
-              %endfor
-            </tbody>
-          </table>
-        %endif
+          <div>
+            {{markdown(api.from_md, escape=False)}}
+          </div>
 
-        %if api.body_params:
-          <table>
-            <thead>
-              <tr>
-                %if language == 'zh':
-                  <th>Body 参数</th>
-                  <th>类型</th>
-                  <th>描述</th>
-                  <th>必须</th>
-                  <th>默认值</th>
-                  <th>示例</th>
-                %else:
-                  <th>Body Parameters</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Required</th>
-                  <th>Default</th>
-                  <th>Example</th>
-                %endif
-              </tr>
-            </thead>
-            <tbody>
-              %for param in api.body_params:
-                <tr>
-                  <td><code>{{param.name}}</code></td>
-                  <td><em>{{param.type}}</em></td>
-                  <td>{{param.description}}</td>
-                  <td>{{param.required_svg}}</td>
-                  <td>{{param.default}}</td>
-                  <td>{{param.example}}</td>
-                </tr>
-              %endfor
-            </tbody>
-          </table>
+        %else:
 
-          %if api.content_types:
-            <p>
-              Content-Types:
-              %for t in api.content_types:
-                <code>{{t}}</code>
-              %endfor
-            </p>
+          %if api.description:
+            <div class="alert alert-ee">{{markdown(api.description, escape=False)}}</div>
           %endif
 
-        %endif
+          %if api.uri_params:
+            <table>
+              <thead>
+                <tr>
+                  %if language == 'zh':
+                    <th>Uri 参数</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                    <th>必须</th>
+                    <th>默认值</th>
+                    <th>示例</th>
+                  %else:
+                    <th>Uri Parameters</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Required</th>
+                    <th>Default</th>
+                    <th>Example</th>
+                  %endif
+                </tr>
+              </thead>
+              <tbody>
+                %for param in api.uri_params:
+                  <tr>
+                    <td><code>{{param.name}}</code></td>
+                    <td><em>{{param.type}}</em></td>
+                    <td>{{param.description}}</td>
+                    <td>{{param.required_svg}}</td>
+                    <td>{{param.default}}</td>
+                    <td>{{param.example}}</td>
+                  </tr>
+                %endfor
+              </tbody>
+            </table>
+          %endif
 
-        %if api.body_example:
-          <p>
-            %if language == 'zh':
-              示例请求数据:
-            %else:
-              Request Body Example:
+          %if api.query_params:
+            <table>
+              <thead>
+                <tr>
+                  %if language == 'zh':
+                    <th>Query 参数</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                    <th>必须</th>
+                    <th>默认值</th>
+                    <th>示例</th>
+                  %else:
+                    <th>Query Parameters</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Required</th>
+                    <th>Default</th>
+                    <th>Example</th>
+                  %endif
+                </tr>
+              </thead>
+              <tbody>
+                %for param in api.query_params:
+                  <tr>
+                    <td><code>{{param.name}}</code></td>
+                    <td><em>{{param.type}}</em></td>
+                    <td>{{param.description}}</td>
+                    <td>{{param.required_svg}}</td>
+                    <td>{{param.default}}</td>
+                    <td>{{param.example}}</td>
+                  </tr>
+                %endfor
+              </tbody>
+            </table>
+          %endif
+
+          %if api.body_params:
+            <table>
+              <thead>
+                <tr>
+                  %if language == 'zh':
+                    <th>Body 参数</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                    <th>必须</th>
+                    <th>默认值</th>
+                    <th>示例</th>
+                  %else:
+                    <th>Body Parameters</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Required</th>
+                    <th>Default</th>
+                    <th>Example</th>
+                  %endif
+                </tr>
+              </thead>
+              <tbody>
+                %for param in api.body_params:
+                  <tr>
+                    <td><code>{{param.name}}</code></td>
+                    <td><em>{{param.type}}</em></td>
+                    <td>{{param.description}}</td>
+                    <td>{{param.required_svg}}</td>
+                    <td>{{param.default}}</td>
+                    <td>{{param.example}}</td>
+                  </tr>
+                %endfor
+              </tbody>
+            </table>
+
+            %if api.content_types:
+              <p>
+                Content-Types:
+                %for t in api.content_types:
+                  <code>{{t}}</code>
+                %endfor
+              </p>
             %endif
-          </p>
-          <pre><code>{{api.body_example.strip()}}</code></pre>
-        %endif
 
-        %if api.response_description:
-          <p>
-            %if language == 'zh':
-              返回结果说明:
-            %else:
-              Response Description:
-            %endif
-          </p>
-          {{markdown(api.response_description, escape=False)}}
-        %endif
+          %endif
 
-        %if api.response_example:
-          <p>
-            %if language == 'zh':
-              示例返回结果:
-            %else:
-              Response Example:
-            %endif
-          </p>
-          <pre><code class="lang-json">{{api.response_example.strip()}}</code></pre>
-        %endif
+          %if api.body_example:
+            <p>
+              %if language == 'zh':
+                示例请求数据:
+              %else:
+                Request Body Example:
+              %endif
+            </p>
+            <pre><code>{{api.body_example.strip()}}</code></pre>
+          %endif
 
-        %if api.tips:
-          <div class="alert alert-warning">
-            {{markdown(api.tips, escape=False)}}
-          </div>
+          %if api.response_description:
+            <p>
+              %if language == 'zh':
+                返回结果说明:
+              %else:
+                Response Description:
+              %endif
+            </p>
+            {{markdown(api.response_description, escape=False)}}
+          %endif
+
+          %if api.response_example:
+            <p>
+              %if language == 'zh':
+                示例返回结果:
+              %else:
+                Response Example:
+              %endif
+            </p>
+            <pre><code class="lang-json">{{api.response_example.strip()}}</code></pre>
+          %endif
+
+          %if api.tips:
+            <div class="alert alert-warning">
+              {{markdown(api.tips, escape=False)}}
+            </div>
+          %endif
+
         %endif
 
         <hr>
