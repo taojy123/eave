@@ -9,7 +9,7 @@ import yaml
 from .step import Template
 
 
-__all__ = ['Doc', 'Note', 'Api', 'Param', 'UriParam', 'QueryParam', 'BodyParam', 'UP', 'QP', 'BP']
+__all__ = ['Doc', 'Note', 'Api', 'Param', 'UriParam', 'QueryParam', 'BodyParam', 'UP', 'QP', 'BP', 'readf']
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -251,4 +251,8 @@ class BodyParam(Param):
 UP = UriParam
 QP = QueryParam
 BP = BodyParam
+
+
+def readf(path, encoding='utf8'):
+    return open(path, encoding=encoding).read()
 
