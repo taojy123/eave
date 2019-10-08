@@ -10,7 +10,7 @@
 
 ## 安装
 
-- 要求 Python 版本大于 3.4
+- 要求 `Python` 版本大于 `3.4`
 - 使用 `pip` 命令一键安装
 
 ```
@@ -21,7 +21,7 @@ pip install eave
 
 ## 基础用法
 
-编写 `python` 脚本，用于生成文档
+编写脚本，用于生成文档
 
 ```python
 # 第1步，引入 eave 包内组件
@@ -108,7 +108,8 @@ doc.build('best.html')
 ```
 
 
-生成的 `html` 文件可以直接用浏览器（推荐 chrome）打开查看
+### 生成的 `html` 文件可以直接用浏览器（推荐 chrome）打开查看
+
 效果如下图，样式美观、结构合理的接口文档：
 
 ![demo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/best.png)
