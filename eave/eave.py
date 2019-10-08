@@ -2,6 +2,7 @@
 
 import os
 import json
+import cgi
 
 import mistune
 import yaml
@@ -157,6 +158,10 @@ class Api(Base):
     @property
     def id(self):
         return id(self)
+        
+    @property
+    def uri_escape(self):
+        return cgi.escape(self.uri)
 
     def load_data(self, data):
         self.title = data.get('title', self.title)

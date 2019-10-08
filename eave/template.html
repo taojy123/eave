@@ -102,7 +102,7 @@
         <h1 id="{{api.id}}">{{api.title}}</h1>
 
         %if api.uri or not api.from_md:
-          <div class="endpoint {{api.method.lower()}}">{{api.uri}}</div>
+          <div class="endpoint {{api.method.lower()}}">{{api.uri_escape}}</div>
         %endif
 
         %if api.from_md:
