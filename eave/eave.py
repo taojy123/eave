@@ -7,7 +7,7 @@ import cgi
 import mistune
 import yaml
 
-from .step import Template
+from step import Template
 
 
 __all__ = ['Doc', 'Note', 'Api', 'Param', 'UriParam', 'QueryParam', 'BodyParam', 'UP', 'QP', 'BP', 'readf']
@@ -152,8 +152,8 @@ class Api(Base):
         self.uri_params = self.uri_params or []
         self.query_params = self.query_params or []
         self.body_params = self.body_params or []
-        if self.from_md and os.path.exists(self.from_md):
-            self.from_md = open(self.from_md, encoding='utf8').read()
+        if self.from_md:
+            self.from_md = readf(self.from_md)
         
     @property
     def id(self):
@@ -259,5 +259,7 @@ BP = BodyParam
 
 
 def readf(path, encoding='utf8'):
-    return open(path, encoding=encoding).read()
-
+    if os.path.exists(path):
+        return open(path, encoding=encoding).read()
+    print(f'WARNING: {path} is not found!')
+    return ''

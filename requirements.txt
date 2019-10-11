@@ -1,5 +1,5 @@
 # python3
 
-#step-template>=0.0.3
+step-template==0.0.3
 mistune>=0.8.4
 pyyaml>=5.1.1

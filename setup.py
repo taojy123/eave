@@ -18,8 +18,8 @@ for line in open('requirements.txt').readlines():
 
 setup(
     name='eave',
-    version='0.0.12',
-    description='A restful api document builder',
+    version='0.0.13',
+    description='A Restful Api Document Builder For Pythonista',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='tao.py',

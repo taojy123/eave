@@ -1,6 +1,8 @@
 # eave
 
-接口文档制作工具 | A Restful Api Document Builder
+接口文档制作工具
+
+A Restful Api Document Builder For Pythonista
 
 
 ![logo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/logo.jpg)
@@ -110,10 +112,9 @@ doc.build('best.html')
 
 #### 生成的 `html` 文件可以直接用浏览器（推荐 chrome）打开查看
 
-效果如下图，样式美观、结构合理的接口文档：
+样式美观、结构合理的接口文档，效果如下图：
 
 ![demo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/best.png)
-
 
 ## 进阶操作
 
@@ -143,5 +144,13 @@ doc3.build('best3.html')
 from eave.utils import raml2eave
 doc = raml2eave('example.raml')
 doc.build('example.html', 'zh')
+
+
+# 通过 from_md 参数，引入单独编写的 markdown 文件作为文档内容
+doc.add_api(
+    title="获取订单列表接口",
+    uri="/orders/list/",
+    from_md="orders.md",
+)
 
 ```
