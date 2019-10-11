@@ -26,6 +26,8 @@ pip install eave
 编写脚本，用于生成文档
 
 ```python
+# demo.py
+
 # 第1步，引入 eave 包内组件
 from eave import Doc, Note, Api, UP, QP, BP
 
@@ -110,9 +112,15 @@ doc.build('best.html')
 ```
 
 
-#### 生成的 `html` 文件可以直接用浏览器（推荐 chrome）打开查看
+#### 执行脚本，生成文档 
 
-样式美观、结构合理的接口文档，效果如下图：
+```
+python demo.py
+```
+
+生成的 `html` 文件可以直接用浏览器（推荐 chrome）打开查看
+
+样式美观、结构合理，效果如下图：
 
 ![demo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/best.png)
 
