@@ -2,7 +2,8 @@
 
 接口文档制作工具
 
-A Restful Api Document Builder For Pythonista
+
+![logo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/logo.jpg)
 
 
 -----
@@ -13,9 +14,6 @@ A Restful Api Document Builder For Pythonista
 - 而且你日常使用 Python 作为主要的编程语言
 
 **那你值得拥有这款神器！**
-
-
-![logo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/logo.jpg)
 
 
 -----
