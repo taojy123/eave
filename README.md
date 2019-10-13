@@ -10,6 +10,15 @@ A Restful Api Document Builder For Pythonista
 
 -----
 
+## 适用对象
+
+- 如果你有编写 Restful API 文档的需求
+- 而且你日常使用 Python 作为主要的编程语言
+
+**那你值得拥有这款神器！**
+
+-----
+
 ## 安装
 
 - 要求 `Python` 版本大于 `3.4`
