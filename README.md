@@ -114,8 +114,15 @@ doc.add_api(
 )
 
 
-# 第6步，使用 build 方法构建生成文档，最后产出 html 文件
+# 第6步，添加文档结尾，markdown 格式
+doc.ending = """
+This is the end of document, **thankyou**!
+"""
+
+
+# 第7步，使用 build 方法构建生成文档，最后产出 html 文件
 doc.build('best.html')
+
 
 ```
 
@@ -138,6 +145,9 @@ python demo.py
 # 指定 language 为 zh，构建中文文档
 doc.build('best_zh.html', language='zh')
 
+# 自定义文档模版
+doc.template = 'eave/template.html'
+doc.build('best1.html')
 
 # 将文档对象导出为 json
 json_data = doc.to_json()
@@ -147,7 +157,6 @@ doc2 = Doc(json_data)
 doc2.title = 'My Second Api Document'
 doc2.build('best2.html')
 
-
 # 将文档对象导出为 yaml
 yaml_data = doc.to_yaml()
 
@@ -155,18 +164,15 @@ yaml_data = doc.to_yaml()
 doc3 = Doc(yaml_data)
 doc3.build('best3.html')
 
-
 # 使用 raml 创建文档对象（不完全支持 raml）
 from eave.utils import raml2eave
 doc = raml2eave('example.raml')
 doc.build('example.html', 'zh')
 
-
-# 通过 from_md 参数，引入单独编写的 markdown 文件作为文档内容
+# 在添加 api 时，也通过 from_md 参数，引入单独编写的 markdown 文件作为文档内容
 doc.add_api(
     title="获取订单列表接口",
     uri="/orders/list/",
     from_md="orders.md",
 )
-
 ```

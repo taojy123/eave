@@ -280,7 +280,10 @@
 
       %endfor
 
-
+      %if doc.ending:
+        <p>{{markdown(doc.ending, escape=False)}}</p>
+        <hr>
+      %endif
 
     </div>
 

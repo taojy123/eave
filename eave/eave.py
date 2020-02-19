@@ -65,6 +65,8 @@ class Doc(Base):
     description = ''
     notes = None
     apis = None
+    ending = ''
+    template = ''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -72,8 +74,10 @@ class Doc(Base):
         self.apis = self.apis or []
 
     def build(self, target=None, language='en'):
-        # language: zh, en ...
-        template = open(os.path.join(BASE_DIR, 'template.html'), encoding='utf8').read()
+        # language: zh / en ...
+        if not self.template:
+            self.template = os.path.join(BASE_DIR, 'template.html')
+        template = open(self.template, encoding='utf8').read()
         html = Template(template, strip=False).expand(
             doc=self, markdown=mistune.markdown, resource=RESOURCE, language=language)
         if target:
@@ -96,6 +100,7 @@ class Doc(Base):
         self.version = data.get('version', self.version)
         self.host = data.get('host', self.host)
         self.description = data.get('description', self.description)
+        self.ending = data.get('ending', self.ending)
 
         notes = data.get('notes')
         apis = data.get('apis')
@@ -114,6 +119,7 @@ class Doc(Base):
             'description': self.description,
             'notes': [n.to_dict() for n in self.notes],
             'apis': [a.to_dict() for a in self.apis],
+            'ending': self.ending,
         }
 
 
