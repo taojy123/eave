@@ -120,10 +120,11 @@ def raml2eave(raml_file, silence=True):
     return doc
 
 
-def _action_description_handle(description):
-    assert description is not None, "detail方法缺少接口描述"
-    description = description.strip()
-    lines = description.splitlines()
+def _action_description_handle(description, url_path=''):
+
+    assert description is not None, f'{url_path} 接口缺少描述！请至少在 `__doc__` 中添加至少一行内容，作为接口名称。'
+
+    lines = description.strip().splitlines()
     title = lines[0].strip()
     result = {
         'title': title,
@@ -269,7 +270,7 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
         url_path = func.url_path
         description = func.kwargs['description']
         method = list(func.mapping.keys())[0].upper()
-        result = _action_description_handle(description)
+        result = _action_description_handle(description, url_path)
         if detail:
             action_uri = f'{uri.rstrip("/")}/<id>/{url_path}/'
         else:
