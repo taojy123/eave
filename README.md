@@ -164,15 +164,20 @@ yaml_data = doc.to_yaml()
 doc3 = Doc(yaml_data)
 doc3.build('best3.html')
 
-# 使用 raml 创建文档对象（不完全支持 raml）
-from eave.utils import raml2eave
-doc = raml2eave('example.raml')
-doc.build('example.html', 'zh')
-
 # 在添加 api 时，也通过 from_md 参数，引入单独编写的 markdown 文件作为文档内容
 doc.add_api(
     title="获取订单列表接口",
     uri="/orders/list/",
     from_md="orders.md",
 )
+
+# 使用 raml 创建文档对象（不完全支持 raml）
+from eave.utils import raml2eave
+doc = raml2eave('example.raml')
+doc.build('example.html', 'zh')
+
+# 根据 django-rest-framework 的代码自动生成 Api 对象
+from eave.utils import auto_drf_apis
+api_list, api_post, api_detail, actions = auto_drf_apis('用户', '/api/users/', UserViewSet)
+doc.add_apis(api_list, api_post, api_detail, *actions)
 ```

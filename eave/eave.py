@@ -86,14 +86,29 @@ class Doc(Base):
         return html
 
     def add_note(self, *args, **kwargs):
-        note = Note(*args, **kwargs)
+        if args and isinstance(args[0], Note):
+            note = args[0]
+        else:
+            note = Note(*args, **kwargs)
         self.notes.append(note)
         return note
 
     def add_api(self, *args, **kwargs):
-        api = Api(*args, **kwargs)
+        if args and isinstance(args[0], Api):
+            api = args[0]
+        else:
+            api = Api(*args, **kwargs)
         self.apis.append(api)
         return api
+
+    def add_apis(self, *apis):
+        if not apis:
+            return
+        if isinstance(apis[0], list):
+            apis = apis[0]
+        for api in apis:
+            assert isinstance(api, Api), 'params of add_apis must be Api instance!'
+            self.add_api(api)
 
     def load_data(self, data):
         self.title = data.get('title', self.title)

@@ -43,6 +43,9 @@
       .content {
         padding: 5px;
       }
+      .power-by {
+        display: none;
+      }
     }
   </style>
 
@@ -108,7 +111,9 @@
         <h1 id="{{api.id}}">{{api.title}}</h1>
 
         %if api.uri or not api.from_md:
-          <div class="endpoint {{api.method.lower()}}">{{api.uri_escape}}</div>
+          <div class="endpoint {{api.method.lower()}}">
+            <a href="{{api.uri_escape}}" target="_blank" style="color: inherit">{{api.uri_escape}}</a>
+          </div>
         %endif
 
         %if api.from_md:
@@ -138,9 +143,9 @@
                     <th>Uri Parameters</th>
                     <th>Type</th>
                     <th>Description</th>
-                    <th class="min-width-2">Required</th>
-                    <th class="min-width-3">Default</th>
-                    <th class="min-width-2">Example</th>
+                    <th>Required</th>
+                    <th>Default</th>
+                    <th>Example</th>
                   %endif
                 </tr>
               </thead>
@@ -167,9 +172,9 @@
                     <th>Query 参数</th>
                     <th>类型</th>
                     <th>描述</th>
-                    <th>必须</th>
-                    <th>默认值</th>
-                    <th>示例</th>
+                    <th class="min-width-2">必须</th>
+                    <th class="min-width-3">默认值</th>
+                    <th class="min-width-2">示例</th>
                   %else:
                     <th>Query Parameters</th>
                     <th>Type</th>
@@ -203,9 +208,9 @@
                     <th>Body 参数</th>
                     <th>类型</th>
                     <th>描述</th>
-                    <th>必须</th>
-                    <th>默认值</th>
-                    <th>示例</th>
+                    <th class="min-width-2">必须</th>
+                    <th class="min-width-3">默认值</th>
+                    <th class="min-width-2">示例</th>
                   %else:
                     <th>Body Parameters</th>
                     <th>Type</th>
@@ -291,10 +296,18 @@
         <hr>
       %endif
 
+
+      <footer>
+        <p class="power-by" style="text-align: right; font-weight: bold;">
+            Power By <a href="https://github.com/taojy123/eave" target="_blank">Eave</a>
+        </p>
+      </footer>
+
     </div>
 
 
   </div>
+
 
   <script>
       {{resource['highlight_js']}}
