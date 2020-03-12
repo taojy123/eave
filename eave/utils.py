@@ -121,6 +121,7 @@ def raml2eave(raml_file, silence=True):
 
 
 def _action_description_handle(description):
+    assert description is not None, "detail方法缺少接口描述"
     description = description.strip()
     lines = description.splitlines()
     title = lines[0].strip()
@@ -186,7 +187,14 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
                 kind_zh = '匹配'
             elif kind == 'in':
                 kind_zh = '命中'
-            field_zh = view_set.serializer_class.Meta.model._meta.get_field(field_name).verbose_name
+            f = field_name.split('__')
+            if len(f) == 1:
+                field_zh = view_set.serializer_class.Meta.model._meta.get_field(f[0]).verbose_name
+            else:
+                q_model = view_set.serializer_class.Meta.model
+                for k in f[0:-1]:
+                    q_model = q_model._meta.get_field(k).related_model
+                field_zh = q_model._meta.get_field(f[-1]).verbose_name
             description = kind_zh + field_zh
             api_list.query_params.append(QP(name=query_name, description=description))
     
@@ -243,10 +251,11 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
     
     data = requests.get(url).json()
     if data['results']:
-        url = data['results'][0].get('url')
-        if not url:
-            res_id = data['results'][0]['id']
+        res_id = data['results'][0].get('id')
+        if res_id:
             url = f'{testhost}{uri.rstrip("/")}/{res_id}/'
+        else:
+            url = data['results'][0].get('url')
         data2 = requests.get(url).json()
         api_detail.response_example = json.dumps(data2, ensure_ascii=False, indent=4)
     
