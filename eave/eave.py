@@ -86,19 +86,27 @@ class Doc(Base):
         return html
 
     def add_note(self, *args, **kwargs):
+        index = kwargs.pop(index, None)
         if args and isinstance(args[0], Note):
             note = args[0]
         else:
             note = Note(*args, **kwargs)
-        self.notes.append(note)
+        if index is None:
+            self.notes.append(note)
+        else:
+            self.notes.insert(index, note)
         return note
 
     def add_api(self, *args, **kwargs):
+        index = kwargs.pop(index, None)
         if args and isinstance(args[0], Api):
             api = args[0]
         else:
             api = Api(*args, **kwargs)
-        self.apis.append(api)
+        if index is None:
+            self.apis.append(api)
+        else:
+            self.apis.insert(index, api)
         return api
 
     def add_apis(self, *apis):
