@@ -1,6 +1,7 @@
 import json
 import re
 import requests
+import os
 
 from eave import *
 import yaml
@@ -120,9 +121,30 @@ def raml2eave(raml_file, silence=True):
     return doc
 
 
-def _action_description_handle(description, url_path=''):
+def _get_request(url, testhost=''):
+    print('get:', testhost + url)
+    if os.path.exists('eave_cache.json'):
+        cache = open('eave_cache.json', encoding='utf8').read()
+        cache = json.loads(cache)
+    else:
+        cache = {}
+    if testhost:
+        data = requests.get(testhost + url).json()
+        cache[url] = data
+        open('eave_cache.json', 'w', encoding='utf8').write(json.dumps(cache))
+    elif url in cache:
+        data = cache[url]
+    else:
+        data = {}
+    return data
 
-    assert description is not None, f'{url_path} 接口缺少描述！请至少在 `__doc__` 中添加至少一行内容，作为接口名称。'
+
+def _action_description_handle(func):
+
+    assert not hasattr(func, 'description'), f'{func.url_path} 接口缺少描述！请至少在 `__doc__` 中添加至少一行内容，作为接口名称。'
+
+    description = func.description
+    method = list(func.mapping.keys())[0].upper()
 
     lines = description.strip().splitlines()
     title = lines[0].strip()
@@ -136,11 +158,11 @@ def _action_description_handle(description, url_path=''):
     target = 'description'
     for line in lines[1:]:
         line = line.strip()
-        if line == 'GET':
-            target = 'query_params'
-            continue
-        elif line == 'POST':
-            target = 'body_params'
+        if line in ['GET', 'POST', 'PUT', 'PATCH', 'PARAMS']:
+            if method == 'GET':
+                target = 'query_params'
+            else:
+                target = 'body_params'
             continue
         elif line == 'RESPONSE':
             target = 'response_description'
@@ -152,10 +174,17 @@ def _action_description_handle(description, url_path=''):
             name, description = line.split(':', 1)
             name = name.strip()
             description = description.strip()
+            required = False
+            default = ''
+            if name.startswith('*'):
+                name = name[1:]
+                required = True
+            if description.count('=>') == 1:
+                description, default = description.split('=>')
             if target == 'query_params':
-                item = QP(name=name, description=description)
+                item = QP(name=name, description=description, required=required, default=default)
             elif target == 'body_params':
-                item = BP(name=name, description=description)
+                item = BP(name=name, description=description, required=required, default=default)
             else:
                 assert False
             result[target].append(item)
@@ -176,32 +205,32 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
     api_list.method = 'GET'
     
     api_list.query_params = []
-    filter_fields = view_set.filter_class.Meta.fields
-    for field_name, kinds in filter_fields.items():
-        for kind in kinds:
-            query_name = f'{field_name}__{kind}'
-            kind_zh = '筛选'
-            if kind == 'exact':
-                kind_zh = '指定'
-                query_name = field_name
-            elif kind in ['icontains', 'contains']:
-                kind_zh = '匹配'
-            elif kind == 'in':
-                kind_zh = '命中'
-            f = field_name.split('__')
-            if len(f) == 1:
-                field_zh = view_set.serializer_class.Meta.model._meta.get_field(f[0]).verbose_name
-            else:
-                q_model = view_set.serializer_class.Meta.model
-                for k in f[0:-1]:
-                    q_model = q_model._meta.get_field(k).related_model
-                field_zh = q_model._meta.get_field(f[-1]).verbose_name
-            description = kind_zh + field_zh
-            api_list.query_params.append(QP(name=query_name, description=description))
+    if hasattr(view_set, 'filter_class'):
+        filter_fields = view_set.filter_class.Meta.fields
+        for field_name, kinds in filter_fields.items():
+            for kind in kinds:
+                query_name = f'{field_name}__{kind}'
+                kind_zh = '筛选'
+                if kind == 'exact':
+                    kind_zh = '指定'
+                    query_name = field_name
+                elif kind in ['icontains', 'contains']:
+                    kind_zh = '匹配'
+                elif kind == 'in':
+                    kind_zh = '命中'
+                f = field_name.split('__')
+                if len(f) == 1:
+                    field_zh = view_set.serializer_class.Meta.model._meta.get_field(f[0]).verbose_name
+                else:
+                    q_model = view_set.serializer_class.Meta.model
+                    for k in f[0:-1]:
+                        q_model = q_model._meta.get_field(k).related_model
+                    field_zh = q_model._meta.get_field(f[-1]).verbose_name
+                description = kind_zh + field_zh
+                api_list.query_params.append(QP(name=query_name, description=description))
     
-    url = testhost + api_list.uri
-    print(url)
-    data = requests.get(url).json()
+    url = api_list.uri
+    data = _get_request(url, testhost)
     if len(data['results']) > 2:
         data['results'] = [data['results'][0]]
     api_list.response_example = json.dumps(data, ensure_ascii=False, indent=4)
@@ -250,14 +279,16 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
     api_detail.method = 'GET'
     api_detail.uri_params = [UP(name='id', description=f'{res_name} ID', example=1)]
     
-    data = requests.get(url).json()
+    data = _get_request(url, testhost)
     if data['results']:
         res_id = data['results'][0].get('id')
         if res_id:
-            url = f'{testhost}{uri.rstrip("/")}/{res_id}/'
+            url = f'{uri.rstrip("/")}/{res_id}/'
         else:
             url = data['results'][0].get('url')
-        data2 = requests.get(url).json()
+            items = url.split('/')[3:]
+            url = '/' + '/'.join(items)
+        data2 = _get_request(url, testhost)
         api_detail.response_example = json.dumps(data2, ensure_ascii=False, indent=4)
     
     # ======= Actions =======
@@ -270,7 +301,7 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
         url_path = func.url_path
         description = func.kwargs['description']
         method = list(func.mapping.keys())[0].upper()
-        result = _action_description_handle(description, url_path)
+        result = _action_description_handle(func)
         if detail:
             action_uri = f'{uri.rstrip("/")}/<id>/{url_path}/'
         else:
