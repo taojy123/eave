@@ -131,19 +131,22 @@ def _get_request(url, testhost=''):
     if testhost:
         data = requests.get(testhost + url).json()
         cache[url] = data
-        open('eave_cache.json', 'w', encoding='utf8').write(json.dumps(cache))
+        open('eave_cache.json', 'w', encoding='utf8').write(json.dumps(cache, indent=4))
+        print('save cache')
     elif url in cache:
         data = cache[url]
+        print('use cache')
     else:
         data = {}
+        print('default empty')
     return data
 
 
 def _action_description_handle(func):
 
-    assert not hasattr(func, 'description'), f'{func.url_path} 接口缺少描述！请至少在 `__doc__` 中添加至少一行内容，作为接口名称。'
+    description = func.kwargs['description'] or ''
+    assert description, f'{func.url_path} 接口缺少描述！请至少在 `__doc__` 中添加至少一行内容，作为接口名称。'
 
-    description = func.description
     method = list(func.mapping.keys())[0].upper()
 
     lines = description.strip().splitlines()
