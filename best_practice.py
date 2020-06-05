@@ -1,7 +1,7 @@
 # ======= Basic Usage ========
 
 # 第1步，引入 eave 包内组件
-from eave import Doc, Note, Api, UP, QP, BP
+from eave import Doc, Note, Api, PP, QP, BP
 
 # 也可以使用 * 方式完全引入
 from eave import *
@@ -34,7 +34,7 @@ doc.add_api(
     method='GET',
     description='Get all orders of shop, shop admin login required',
     uri_params=[
-        UP(name='id', description='the id of shop')
+        PP(name='id', description='the id of shop')
     ],
     query_params=[
         QP(name='page', type='integer', default=1),

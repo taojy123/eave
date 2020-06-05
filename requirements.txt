@@ -2,4 +2,4 @@
 
 step-template==0.0.3
 mistune>=0.8.4
-pyyaml
+pyyaml>=5.3.1

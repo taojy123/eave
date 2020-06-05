@@ -2,15 +2,16 @@
 
 import os
 import json
-import cgi
+import html
 
 import mistune
 import yaml
 
+
 from step import Template
 
 
-__all__ = ['Doc', 'Note', 'Api', 'Param', 'UriParam', 'QueryParam', 'BodyParam', 'UP', 'QP', 'BP', 'readf']
+__all__ = ['Doc', 'Note', 'Api', 'Param', 'PathParam', 'QueryParam', 'BodyParam', 'PP', 'QP', 'BP', 'readf']
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -86,7 +87,7 @@ class Doc(Base):
         return html
 
     def add_note(self, *args, **kwargs):
-        index = kwargs.pop(index, None)
+        index = kwargs.pop('index', None)
         if args and isinstance(args[0], Note):
             note = args[0]
         else:
@@ -98,7 +99,7 @@ class Doc(Base):
         return note
 
     def add_api(self, *args, **kwargs):
-        index = kwargs.pop(index, None)
+        index = kwargs.pop('index', None)
         if args and isinstance(args[0], Api):
             api = args[0]
         else:
@@ -166,7 +167,7 @@ class Api(Base):
     uri = ''
     method = 'GET'
     description = ''
-    uri_params = None
+    path_params = None
     query_params = None
     body_params = None
     content_types = ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data']
@@ -178,7 +179,7 @@ class Api(Base):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.uri_params = self.uri_params or []
+        self.path_params = self.path_params or []
         self.query_params = self.query_params or []
         self.body_params = self.body_params or []
         if self.from_md:
@@ -190,7 +191,7 @@ class Api(Base):
         
     @property
     def uri_escape(self):
-        return cgi.escape(self.uri)
+        return html.escape(self.uri)
 
     def load_data(self, data):
         self.title = data.get('title', self.title)
@@ -204,12 +205,12 @@ class Api(Base):
         self.tips = data.get('tips', self.tips)
         self.from_md = data.get('from_md', self.from_md)
 
-        uri_params = data.get('uri_params')
+        path_params = data.get('path_params')
         query_params = data.get('query_params')
         body_params = data.get('body_params')
 
-        if uri_params:
-            self.uri_params = [UriParam(d) for d in uri_params]
+        if path_params:
+            self.path_params = [PathParam(d) for d in path_params]
 
         if query_params:
             self.query_params = [QueryParam(d) for d in query_params]
@@ -229,7 +230,7 @@ class Api(Base):
             'response_example': self.response_example,
             'tips': self.tips,
             'from_md': self.from_md,
-            'uri_params': [p.to_dict() for p in self.uri_params],
+            'path_params': [p.to_dict() for p in self.path_params],
             'query_params': [p.to_dict() for p in self.query_params],
             'body_params': [p.to_dict() for p in self.body_params],
         }
@@ -270,7 +271,7 @@ class Param(Base):
         }
 
     
-class UriParam(Param):
+class PathParam(Param):
     required = True
 
 
@@ -282,7 +283,7 @@ class BodyParam(Param):
     pass
 
 
-UP = UriParam
+PP = PathParam
 QP = QueryParam
 BP = BodyParam
 

@@ -1,3 +1,5 @@
+# todo: use uinttest
+
 from eave import *
 
 
@@ -36,7 +38,7 @@ api1.method = "GET"
 api1.uri = "/test1/<id>/"
 api1.description = "this is the **first** api"
 
-up1 = UriParam()
+up1 = PathParam()
 up1.name = 'id'
 up1.description = 'resource id'
 up1.example = 10
