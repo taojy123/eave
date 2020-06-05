@@ -1,124 +1,10 @@
 import json
-import re
 import requests
 import os
 
 from eave import *
-import yaml
 
-__all__ = ['raml2eave', 'auto_drf_apis']
-
-
-def _find_resources(data, base_uri):
-    for key, value in data.items():
-        if not key.startswith('/'):
-            continue
-        if not isinstance(value, dict):
-            continue
-        for method in ['get', 'post', 'put', 'patch', 'delete']:
-            if method in value:
-                resource = value
-                resource['uri'] = base_uri + key
-                yield resource
-                break
-                
-
-def _find_target(data, target, excludes=None):
-    excludes = excludes or []
-    if isinstance(data, list):
-        for item in data:
-            if item in excludes:
-                continue
-            r = _find_target(item, target, excludes)
-            if r:
-                return r
-    elif isinstance(data, dict):
-        if target in data:
-            return data[target]
-        else:
-            for key, value in data.items():
-                if key in excludes:
-                    continue
-                r = _find_target(value, target, excludes)
-                if r:
-                    return r
-
-
-def _append_resource(doc, data, base_uri=''):
-    for resource in _find_resources(data, base_uri):
-        api_uri = resource['uri']
-        secured_by = resource.get('securedBy')
-        
-        for method_name, method_data in resource.items():
-            if method_name not in ['get', 'post', 'put', 'patch', 'delete']:
-                continue
-            api = Api()
-            name1 = resource.get('displayName', '')
-            name2 = method_data.get('description', '')
-            if name1 in name2:
-                name1 = ''
-            api.title = f'{name1} {name2}'.strip()
-            api.uri = api_uri
-            api.method = method_name
-
-            secured_by = method_data.get('securedBy', secured_by)
-            if secured_by:
-                api.description = f'Secured By: **{secured_by}**'
-            
-            ups = re.findall(r'\{(.+)\}', api.uri)
-            for up in ups:
-                api.uri_params.append(UP(name=up))
-
-            queryparameters = method_data.get('queryParameters', {})
-            for p_name, p_data in queryparameters.items():
-                p_data = p_data or {}
-                p_data['name'] = p_name
-                api.query_params.append(QP(p_data))
-            
-            properties = _find_target(method_data.get('body'), 'properties') or {}
-            for p_name, p_data in properties.items():
-                p_data = p_data or {}
-                p_data['name'] = p_name
-                api.body_params.append(BP(p_data))
-            
-            api.body_example = _find_target(method_data.get('body'), 'example', ['properties']) or ''
-            api.response_example = _find_target(method_data.get('responses'), 'example') or ''
-            api.content_types = []
-            
-            doc.apis.append(api)
-            
-        _append_resource(doc, resource, api_uri)
-            
-            
-def raml2eave(raml_file, silence=True):
-    """
-    raml2eave('tiadmin.raml').build('tiadmin.html', 'zh')
-    raml2eave('grs.raml').build('grs.html', 'zh')
-    """
-    
-    raml_content = open(raml_file, encoding='utf8').read()
-    data = yaml.safe_load(raml_content)
-    
-    if not silence:
-        print(json.dumps(data, ensure_ascii=False, indent=2))
-    
-    doc = Doc()
-    doc.title = data.get('title', '')
-    doc.version = data.get('version', '')
-    doc.host = data.get('baseUri', '')
-    doc.description = data.get('description', '')
-
-    for note in data.get('documentation', []):
-        doc.add_note(note)
-
-    security_schemes = data.get('securitySchemes')
-    for name, scheme in security_schemes.items():
-        content = scheme.get('description', '')
-        doc.add_note(title=name, content=content)
-
-    _append_resource(doc, data, '')
-    
-    return doc
+__all__ = ['auto_drf_apis']
 
 
 def _get_request(url, testhost=''):
@@ -191,10 +77,14 @@ def _action_description_handle(func):
             else:
                 assert False
             result[target].append(item)
+
+    result['params'] = result['query_params'] + result['body_params']
+    del result['query_params']
+    del result['body_params']
     return result
 
 
-def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
+def auto_drf_apis(res_name, url, view_set, testhost='http://127.0.0.1:8000'):
     """
     # todo: 加强这块文档和示例，写进 eave 主页介绍
     api_list, api_post, api_detail, actions = auto_drf_apis('用户', '/api/users/', UserViewSet)
@@ -204,10 +94,10 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
     # ======= GET List =======
     api_list = Api()
     api_list.title = res_name + '列表'
-    api_list.uri = uri
+    api_list.url = url
     api_list.method = 'GET'
     
-    api_list.query_params = []
+    api_list.params = []
     if hasattr(view_set, 'filter_class'):
         filter_fields = view_set.filter_class.Meta.fields
         for field_name, kinds in filter_fields.items():
@@ -230,9 +120,9 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
                         q_model = q_model._meta.get_field(k).related_model
                     field_zh = q_model._meta.get_field(f[-1]).verbose_name
                 description = kind_zh + field_zh
-                api_list.query_params.append(QP(name=query_name, description=description))
+                api_list.params.append(QP(name=query_name, description=description))
     
-    url = api_list.uri
+    url = api_list.url
     data = _get_request(url, testhost)
     if len(data['results']) > 2:
         data['results'] = [data['results'][0]]
@@ -241,11 +131,11 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
     # ======= POST =======
     api_post = Api()
     api_post.title = '创建' + res_name
-    api_post.uri = uri
+    api_post.url = url
     api_post.method = 'POST'
     
     serializer = view_set.serializer_class()
-    api_post.body_params = []
+    api_post.params = []
     for field_name, field in serializer.fields.items():
         if field.read_only:
             continue
@@ -270,7 +160,7 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
         except:
             # print(f'Warning: {field_name} field not found in {view_set.serializer_class.Meta.model}')
             pass
-        api_post.body_params.append(BP(name=field_name, type=type, description=description, required=required, default=default))
+        api_post.params.append(BP(name=field_name, type=type, description=description, required=required, default=default))
     
     if data['results']:
         api_post.response_example = json.dumps(data['results'][0], ensure_ascii=False, indent=4)
@@ -278,15 +168,15 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
     # ======= GET Detail =======
     api_detail = Api()
     api_detail.title = res_name + '详情'
-    api_detail.uri = f'{uri.rstrip("/")}/<id>/'
+    api_detail.url = f'{url.rstrip("/")}/<id>/'
     api_detail.method = 'GET'
-    api_detail.uri_params = [UP(name='id', description=f'{res_name} ID', example=1)]
+    api_detail.params = [PP(name='id', description=f'{res_name} ID', example=1)]
     
     data = _get_request(url, testhost)
     if data['results']:
         res_id = data['results'][0].get('id')
         if res_id:
-            url = f'{uri.rstrip("/")}/{res_id}/'
+            url = f'{url.rstrip("/")}/{res_id}/'
         else:
             url = data['results'][0].get('url')
             items = url.split('/')[3:]
@@ -306,10 +196,10 @@ def auto_drf_apis(res_name, uri, view_set, testhost='http://127.0.0.1:8000'):
         method = list(func.mapping.keys())[0].upper()
         result = _action_description_handle(func)
         if detail:
-            action_uri = f'{uri.rstrip("/")}/<id>/{url_path}/'
+            action_url = f'{url.rstrip("/")}/<id>/{url_path}/'
         else:
-            action_uri = f'{uri.rstrip("/")}/{url_path}/'
-        api_action = Api(uri=action_uri, method=method, **result)
+            action_url = f'{url.rstrip("/")}/{url_path}/'
+        api_action = Api(url=action_url, method=method, **result)
         actions.append(api_action)
     
     # ============================

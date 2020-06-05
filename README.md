@@ -63,16 +63,14 @@ doc.add_note(
 )
 
 
-# 第5步，添加一个接口，通过 uri method query_params 等参数进行描述
+# 第5步，添加一个接口，使用 url method params 等参数进行描述
 doc.add_api(
     title='Get all orders of shop',
-    uri='/shop/<id>/orders/',
+    url='/shop/<id>/orders/',
     method='GET',
     description='Get all orders of shop, shop admin login required',
-    uri_params=[
-        PP(name='id', description='the id of shop')
-    ],
-    query_params=[
+    params=[
+        PP(name='id', description='the id of shop'),
         QP(name='page', type='integer', default=1),
         QP(name='page_size', type='integer', default=10),
     ],
@@ -95,9 +93,9 @@ doc.add_api(
 # 继续添加接口，可支持的 method 有 GET POST PUT PATCH DELETE 等
 doc.add_api(
     title='Create a product',
-    uri='/products/',
+    url='/products/',
     method='POST',
-    body_params=[
+    params=[
         BP(name='name', required=True),
         BP(name='category', example='food'),
         BP(name='price', type='float', default=0),
@@ -123,7 +121,6 @@ This is the end of document, **thankyou**!
 # 第7步，使用 build 方法构建生成文档，最后产出 html 文件
 doc.build('best.html')
 
-
 ```
 
 
@@ -146,6 +143,8 @@ python demo.py
 doc.build('best_zh.html', language='zh')
 
 # 自定义文档模版
+import os
+print(os.getcwd())
 doc.template = 'eave/template.html'
 doc.build('best1.html')
 
@@ -167,17 +166,7 @@ doc3.build('best3.html')
 # 在添加 api 时，也通过 from_md 参数，引入单独编写的 markdown 文件作为文档内容
 doc.add_api(
     title="获取订单列表接口",
-    uri="/orders/list/",
+    url="/orders/list/",
     from_md="orders.md",
 )
-
-# 使用 raml 创建文档对象（不完全支持 raml）
-from eave.utils import raml2eave
-doc = raml2eave('example.raml')
-doc.build('example.html', 'zh')
-
-# 根据 django-rest-framework 的代码自动生成 Api 对象
-from eave.utils import auto_drf_apis
-api_list, api_post, api_detail, actions = auto_drf_apis('用户', '/api/users/', UserViewSet)
-doc.add_apis(api_list, api_post, api_detail, *actions)
 ```

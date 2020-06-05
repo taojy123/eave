@@ -41,12 +41,10 @@ class Base:
             setattr(self, key, value)
 
     def load_data(self, data):
-        # do something by override
-        pass
+        raise NotImplementedError('.load_data() must be overridden.')
 
     def to_dict(self):
-        # do something by override
-        return {}
+        raise NotImplementedError('.to_dict() must be overridden.')
 
     def to_json(self):
         return json.dumps(self.to_dict(), ensure_ascii=False, indent=2)
@@ -61,7 +59,7 @@ class Base:
 
 class Doc(Base):
     title = 'API Document'
-    version = 'v1.0.0'
+    version = 'v1'
     host = 'http://rest.api.com'
     description = ''
     notes = None
@@ -164,12 +162,10 @@ class Note(Base):
 
 class Api(Base):
     title = ''
-    uri = ''
+    url = ''
     method = 'GET'
     description = ''
-    path_params = None
-    query_params = None
-    body_params = None
+    params = None
     content_types = ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data']
     body_example = ''
     response_description = ''
@@ -179,9 +175,7 @@ class Api(Base):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.path_params = self.path_params or []
-        self.query_params = self.query_params or []
-        self.body_params = self.body_params or []
+        self.params = self.params or []
         if self.from_md:
             self.from_md = readf(self.from_md)
         
@@ -190,12 +184,24 @@ class Api(Base):
         return id(self)
         
     @property
-    def uri_escape(self):
-        return html.escape(self.uri)
+    def url_escape(self):
+        return html.escape(self.url)
+
+    @property
+    def path_params(self):
+        return [param for param in self.params if param.category == 'path']
+
+    @property
+    def query_params(self):
+        return [param for param in self.params if param.category == 'query']
+
+    @property
+    def body_params(self):
+        return [param for param in self.params if param.category == 'body']
 
     def load_data(self, data):
         self.title = data.get('title', self.title)
-        self.uri = data.get('uri', self.uri)
+        self.url = data.get('url', self.url)
         self.method = data.get('method', self.method)
         self.description = data.get('description', self.description)
         self.content_types = data.get('content_types', self.content_types)
@@ -205,23 +211,14 @@ class Api(Base):
         self.tips = data.get('tips', self.tips)
         self.from_md = data.get('from_md', self.from_md)
 
-        path_params = data.get('path_params')
-        query_params = data.get('query_params')
-        body_params = data.get('body_params')
-
-        if path_params:
-            self.path_params = [PathParam(d) for d in path_params]
-
-        if query_params:
-            self.query_params = [QueryParam(d) for d in query_params]
-
-        if body_params:
-            self.body_params = [BodyParam(d) for d in body_params]
+        params = data.get('params')
+        if params:
+            self.params = [Param(d) for d in params]
 
     def to_dict(self):
         return {
             'title': self.title,
-            'uri': self.uri,
+            'url': self.url,
             'method': self.method,
             'description': self.description,
             'content_types': self.content_types,
@@ -230,13 +227,12 @@ class Api(Base):
             'response_example': self.response_example,
             'tips': self.tips,
             'from_md': self.from_md,
-            'path_params': [p.to_dict() for p in self.path_params],
-            'query_params': [p.to_dict() for p in self.query_params],
-            'body_params': [p.to_dict() for p in self.body_params],
+            'params': [p.to_dict() for p in self.params],
         }
 
 
 class Param(Base):
+    category = ''  # path / query / body
     name = ''
     type = 'string'
     description = ''
@@ -253,6 +249,7 @@ class Param(Base):
             return ''
 
     def load_data(self, data):
+        self.category = data.get('category', self.category)
         self.name = data.get('name', self.name)
         self.type = data.get('type', self.type)
         self.description = data.get('description', self.description)
@@ -262,6 +259,7 @@ class Param(Base):
 
     def to_dict(self):
         return {
+            'category': self.category,
             'name': self.name,
             'type': self.type,
             'description': self.description,
@@ -272,15 +270,16 @@ class Param(Base):
 
     
 class PathParam(Param):
+    category = 'path'
     required = True
 
 
 class QueryParam(Param):
-    pass
+    category = 'query'
 
 
 class BodyParam(Param):
-    pass
+    category = 'body'
 
 
 PP = PathParam
