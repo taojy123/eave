@@ -28,6 +28,17 @@
     .min-width-3 {
       min-width: 45px;
     }
+    .print-tips{
+      float: left;
+      text-align: center;
+      text-decoration:none;
+      padding: 10px;
+      line-height: 1;
+      border-radius: 50px;
+      background-color: #ecf5ff;
+      color: #419dff;
+      cursor: pointer;
+    }
     @media print {
       pre{
         white-space:pre-wrap;
@@ -43,9 +54,10 @@
       .content {
         padding: 5px;
       }
-      .power-by {
+      footer {
         display: none;
       }
+
     }
   </style>
 
@@ -303,9 +315,23 @@
 
 
       <footer>
-        <p class="power-by" style="text-align: right; font-weight: bold;">
+        <div class="print-tips" onclick="alert(
+            %if language == 'zh':
+              '推荐在 Chrome 浏览器中打印，请在设置选项中勾选中 `背景图形`，并取消勾选 `页眉和页脚`。'
+            %else:
+              'We recommend printing in Chrome, please check `Background Graphics` in the settings options and uncheck ` Headers and footers `.'
+            %endif
+        );window.print()">
+            %if language == 'zh':
+              打印本文档
+            %else:
+              Print This Document
+            %endif
+        </div>
+        <div class="power-by" style="font-weight: bold; float: right">
             Power By <a href="https://github.com/taojy123/eave" target="_blank">Eave</a>
-        </p>
+        </div>
+        <div style="clear: both; height: 20px"></div>
       </footer>
 
     </div>
