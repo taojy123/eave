@@ -11,7 +11,7 @@ import yaml
 from step import Template
 
 
-__all__ = ['Doc', 'Note', 'Api', 'Param', 'PathParam', 'QueryParam', 'BodyParam', 'PP', 'QP', 'BP', 'readf']
+__all__ = ['Doc', 'Note', 'Api', 'Param', 'PathParam', 'QueryParam', 'BodyParam', 'ResponseParam', 'PP', 'QP', 'BP', 'RP', 'readf']
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -214,7 +214,29 @@ class Api(Base):
         params = data.get('params')
         if params:
             self.params = [Param(d) for d in params]
-
+            
+    def make_body_example(self):
+        if not self.body_params:
+            return ''
+        r = {}
+        for p in self.body_params:
+            value = ''
+            if p.example:
+                value = p.example
+            else:
+                if p.type == 'string':
+                    value = 'string'
+                elif p.type == 'integer':
+                    value = 12
+                elif p.type == 'float':
+                    value = 1.5
+                elif p.type == 'decimal':
+                    value = '1.0'
+                elif p.type == 'boolean':
+                    value = True
+            r[p.name] = value
+        self.body_example = json.dumps(r, indent=4)
+        
     def to_dict(self):
         return {
             'title': self.title,
@@ -232,9 +254,9 @@ class Api(Base):
 
 
 class Param(Base):
-    category = ''  # path / query / body
+    category = ''  # path / query / body ...
     name = ''
-    type = 'string'
+    type = 'string'  # string / integer / float / decimal / boolean ...
     description = ''
     required = False
     default = ''
@@ -282,9 +304,14 @@ class BodyParam(Param):
     category = 'body'
 
 
+class ResponseParam(Param):
+    category = 'response'
+
+
 PP = PathParam
 QP = QueryParam
 BP = BodyParam
+RP = ResponseParam
 
 
 def readf(path, encoding='utf8'):

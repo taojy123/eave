@@ -1,4 +1,4 @@
-# todo: use uinttest
+# todo: change to uinttest
 
 from eave import *
 

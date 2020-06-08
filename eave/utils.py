@@ -142,13 +142,13 @@ def auto_drf_apis(res_name, url, view_set, testhost='http://127.0.0.1:8000'):
         type = 'string'
         field_type = str(field.__class__)
         if 'IntegerField' in field_type:
-            type = 'int'
+            type = 'integer'
         elif 'FloatField' in field_type:
             type = 'float'
         elif 'DecimalField' in field_type:
             type = 'decimal'
         elif 'BooleanField' in field_type:
-            type = 'bool'
+            type = 'boolean'
         description = field.label
         if field.help_text:
             description += f' [{field.help_text}]'

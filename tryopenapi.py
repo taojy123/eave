@@ -565,6 +565,7 @@ for path, operations in root.paths.items():
         api.description = operation.description
         api.method = method.upper()
         api.params = []
+        api.content_types = []
 
         parameters = operation.parameters or []
         requestBody = operation.requestBody
@@ -608,26 +609,50 @@ for path, operations in root.paths.items():
                 p.example = example
                 p.default = ''
                 api.params.append(p)
-
-        # uri_params = None
-        # query_params = None
-        body_params = None
-        content_types = ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data']
-        body_example = ''
+                
+        if requestBody and requestBody.content:
+            param_names = []
+            for content_type, value in requestBody.content.items():
+                content = DNode(value)
+                api.content_types.append(content_type)
+                properties = content.schema and content.schema.properties or {}
+                required_names = content.schema and content.schema.required or []
+                for param_name, value in properties.items():
+                    if param_name in param_names:
+                        continue
+                    param = DNode(value)
+                    p = BodyParam()
+                    p.name = param_name
+                    p.type = param.type
+                    p.description = param.description or ''
+                    p.required = param_name in required_names
+                    api.params.append(p)
+                    param_names.append(param_name)
+            
+        api.make_body_example()
+        
+        # todo: support response
         response_description = ''
         response_example = ''
-        tips = ''
-        from_md = ''
-
+        
         doc.add_api(api)
 
-notes = None
-apis = None
-ending = ''
-template = ''
+
+doc.build('test.html', 'zh')
 
 
-root.security
-root.externalDocs
+# todo: support more
+# root.security
+# root.externalDocs
+# root.components
+# root.components.schemas
+# root.components.responses
+# root.components.parameters
+# root.components.examples
+# root.components.requestBodies
+# root.components.headers
+# root.components.securitySchemes
+# root.components.links
+# root.components.callbacks
 
-doc.build('t.html')
+
