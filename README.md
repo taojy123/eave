@@ -1,6 +1,6 @@
 # eave
 
-优美的接口文档制作工具
+优雅的接口文档制作工具
 
 
 ![logo](https://raw.githubusercontent.com/taojy123/eave/master/eave/resource/logo.jpg)
