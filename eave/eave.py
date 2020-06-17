@@ -168,8 +168,8 @@ class Api(Base):
     params = None
     content_types = ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data']
     body_example = ''
-    response_description = ''
     response_example = ''
+    response_description = ''
     tips = ''
     from_md = ''
 
