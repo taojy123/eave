@@ -91,7 +91,7 @@
 
       <p>
         %if language == 'zh':
-          接口目录:
+          目录:
         %else:
           Contents
         %endif
@@ -267,7 +267,7 @@
           %if api.body_example:
             <p>
               %if language == 'zh':
-                示例请求数据:
+                请求数据示例:
               %else:
                 Request Body Example:
               %endif
@@ -275,21 +275,10 @@
             <pre><code>{{api.body_example.strip()}}</code></pre>
           %endif
 
-          %if api.response_description:
-            <p>
-              %if language == 'zh':
-                返回结果说明:
-              %else:
-                Response Description:
-              %endif
-            </p>
-            {{markdown(api.response_description, escape=False)}}
-          %endif
-
           %if api.response_example:
             <p>
               %if language == 'zh':
-                示例返回结果:
+                响应结果示例:
               %else:
                 Response Example:
               %endif
@@ -297,6 +286,17 @@
             <pre><code class="lang-json">{{api.response_example.strip()}}</code></pre>
           %endif
 
+          %if api.response_description:
+            <p>
+              %if language == 'zh':
+                响应结果说明:
+              %else:
+                Response Description:
+              %endif
+            </p>
+            {{markdown(api.response_description, escape=False)}}
+          %endif
+      
           %if api.tips:
             <div class="alert alert-warning">
               {{markdown(api.tips, escape=False)}}
