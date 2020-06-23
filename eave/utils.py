@@ -1,10 +1,14 @@
 import json
+
+import dnode
 import requests
 import os
 
+import yaml
+
 from eave import *
 
-__all__ = ['auto_drf_apis']
+__all__ = ['auto_drf_apis', 'doc_from_openapi']
 
 
 def _get_request(url, testhost=''):
@@ -207,3 +211,174 @@ def auto_drf_apis(res_name, url, view_set, testhost='http://127.0.0.1:8000'):
     return api_list, api_post, api_detail, actions
 
 
+class DNode(dnode.DNode):
+
+    def __getattr__(self, item):
+        if item not in self.fields:
+            return None
+        return super().__getattr__(item)
+
+
+def doc_from_openapi(s):
+    """
+    [beta]
+    make eave doc instance from a OpenAPI3 document
+    s should be any of the following
+    1. the url of openapi online, such as: http://some.domain.com/openapi.json or http://some.domain.com/openapi.yaml
+    2. the file path of openapi document, such as: path/to/openapi.json or path/to/openapi.yaml
+    3. the json string of openapi, such as: '{"openapi": "3.0.2", "paths": {...} }'
+    4. the yaml string of openapi, such as: 'openapi: 3.0.2\npaths:\n  ...'
+    5. the dict of parsed document, such as: {"openapi": "3.0.2", "paths": {...} }
+    """
+
+    if isinstance(s, dict):
+        data = s
+    else:
+        assert isinstance(s, str), f's param must be dict or str, not {s}'
+
+        if s.startswith('http'):
+            url = s
+            s = requests.get(url).text
+
+        if os.path.isfile(s):
+            s = open(s).read()
+
+        if s.strip().startswith('{'):
+            data = json.loads(s)
+        else:
+            data = yaml.safe_load(s)
+
+    doc = Doc()
+    root = DNode(data)
+
+    info = root.info
+    if info:
+        doc.title = info.title or ''
+        doc.version = info.version or doc.version
+        doc.description = info.description or ''
+
+    servers = root.servers
+    if servers:
+        hosts = []
+        for server in servers:
+            h = server.url
+            description = server.description
+            if description:
+                h += f'({description})'
+            hosts.append(h)
+        doc.host = ', '.join(hosts)
+
+    paths = root.paths or {}
+    for path, operations in paths.items():
+        # print(path)
+        for method, operation in operations.items():
+            operation = DNode(operation)
+            # print(method)
+            # print(operation)
+
+            api = Api()
+            api.url = path
+            api.title = operation.summary or operation.description or operation.operationId
+            api.description = operation.description
+            api.method = method.upper()
+            api.params = []
+            api.content_types = []
+
+            parameters = operation.parameters or []
+            requestBody = operation.requestBody
+            responses = operation.responses or {}
+
+            for parameter in parameters:
+                category = parameter.get('in')
+                name = parameter.name
+                required = parameter.required or False
+                description = parameter.description or ''
+
+                # todo: support deprecated and allowEmptyValue
+                deprecated = parameter.deprecated
+                allowEmptyValue = parameter.allowEmptyValue
+
+                type = 'string'
+                example = ''
+                schema = parameter.schema
+                if schema:
+                    type = schema.type or type
+                    example = schema.example or example
+
+                # in: "path", "query", "cookie", "header"
+                p = None
+                if category == 'path':
+                    p = PathParam()
+                elif category == 'query':
+                    p = QueryParam()
+                    p.required = required
+                elif category == 'cookie':
+                    # todo: support cookie parameters
+                    pass
+                elif category == 'header':
+                    # todo: support header parameters
+                    pass
+
+                if p:
+                    p.name = name
+                    p.description = description
+                    p.type = type
+                    p.example = example
+                    p.default = ''
+                    api.params.append(p)
+
+            if requestBody and requestBody.content:
+                param_names = []
+                # todo: support for $ref
+                for content_type, value in requestBody.content.items():
+                    content = DNode(value)
+                    api.content_types.append(content_type)
+                    properties = content.schema and content.schema.properties or {}
+                    required_names = content.schema and content.schema.required or []
+                    for param_name, value in properties.items():
+                        if param_name in param_names:
+                            continue
+                        param = DNode(value)
+                        p = BodyParam()
+                        p.name = param_name
+                        p.type = param.type
+                        p.description = param.description or ''
+                        p.required = param_name in required_names
+                        api.params.append(p)
+                        param_names.append(param_name)
+
+            api.make_body_example()
+
+            codes = list(responses.keys())
+            if codes:
+                if '200' in codes:
+                    code = '200'
+                else:
+                    code = codes[0]
+
+                response = responses[code]
+
+                if 'content' in response:
+                    # todo: improve real response example
+                    api.response_example = json.dumps(response['content'], ensure_ascii=False, indent=4)
+
+                api.response_description = response.get('description')
+
+            doc.add_api(api)
+
+    # todo: support more
+    # root.security
+    # root.externalDocs
+    # root.components
+    # root.components.schemas
+    # root.components.responses
+    # root.components.parameters
+    # root.components.examples
+    # root.components.requestBodies
+    # root.components.headers
+    # root.components.securitySchemes
+    # root.components.links
+    # root.components.callbacks
+
+    # doc.build('openapi.html', 'zh')
+    return doc

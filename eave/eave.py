@@ -11,7 +11,7 @@ import yaml
 from step import Template
 
 
-__all__ = ['Doc', 'Note', 'Api', 'Param', 'PathParam', 'QueryParam', 'BodyParam', 'ResponseParam', 'PP', 'QP', 'BP', 'RP', 'readf']
+__all__ = ['Doc', 'Note', 'Api', 'Param', 'PathParam', 'QueryParam', 'BodyParam', 'PP', 'QP', 'BP', 'readf']
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -304,14 +304,9 @@ class BodyParam(Param):
     category = 'body'
 
 
-class ResponseParam(Param):
-    category = 'response'
-
-
 PP = PathParam
 QP = QueryParam
 BP = BodyParam
-RP = ResponseParam
 
 
 def readf(path, encoding='utf8'):

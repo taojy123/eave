@@ -162,8 +162,8 @@ this is a test document
         self.assertIn('Contents', html_en)
         self.assertIn('Request Body Example', html_en)
         self.assertIn('Print This Document', html_en)
-        self.assertIn('接口目录', html_zh)
-        self.assertIn('示例请求数据', html_zh)
+        self.assertIn('目录', html_zh)
+        self.assertIn('请求数据示例', html_zh)
         self.assertIn('打印本文档', html_zh)
 
 

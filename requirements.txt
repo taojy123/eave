@@ -3,3 +3,5 @@
 step-template==0.0.3
 mistune>=0.8.4
 pyyaml>=5.3.1
+dnode>=0.2.6
+requests

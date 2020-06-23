@@ -170,3 +170,23 @@ doc.add_api(
     from_md="orders.md",
 )
 ```
+
+## 更新说明
+
+#### v0.1.2
+
+- `UriParam` 改为 `PathParam`
+- api 中的 `uri` 改为 `url`
+- api 中的`uri_params` 改为 `path_params`
+- api 中的 `path_params` `query_params` `body_params` 统一为 `params`
+- `path_params` `query_params` `body_params` 现在作为 `property` 出现
+- template 添加打印按钮，并加 tips ok
+- 生成文档地步增加打印按钮
+- api 中添加 `make_body_example` 功能，可根据 `body_params` 生成简单示例
+- 添加单元测试 `test.py`
+- utils 中添加支持 `openapi` 导入功能
+- utils 中不再支持 `raml`
+
+`0.1.x` 与前版本 `0.0.x` 不兼容
+
+
