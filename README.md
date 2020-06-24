@@ -180,8 +180,7 @@ doc.add_api(
 - api 中的`uri_params` 改为 `path_params`
 - api 中的 `path_params` `query_params` `body_params` 统一为 `params`
 - `path_params` `query_params` `body_params` 现在作为 `property` 出现
-- template 添加打印按钮，并加 tips ok
-- 生成文档地步增加打印按钮
+- 文档底部增加打印按钮
 - api 中添加 `make_body_example` 功能，可根据 `body_params` 生成简单示例
 - 添加单元测试 `test.py`
 - utils 中添加支持 `openapi` 导入功能
